@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <meta name="robots" content="noindex">
+    <base target="_parent" />
+
+    <style>
+        .ads-player__happy-inside-btn-close {
+            background-color: #FF3565;
+            color: #fff;
+        }
+
+        .ads-player__happy-inside-btn-close {
+            border-color: #FF3565 !important;
+            color: #fff;
+        }
+
+        .ads_initial_play:hover {
+            -webkit-box-shadow: 0px 0px 40px 5px #FF3565;
+            /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+            -moz-box-shadow: 0px 0px 40px 5px #FF3565;
+            /* Firefox 3.5 - 3.6 */
+            box-shadow: 0px 0px 40px 5px #FF3565;
+            /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+        }
+
+    </style>
+
+    <style>
+        body {
+            color: white;
+            background: #000;
+            position: absolute;
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+        .vast_video_loading {
+            position: absolute;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="ads-player">
+        <div class="ads-player-block"><video poster="https://raw.githubusercontent.com/sameerchapai3/Ads-Player/main/images/thumbnail.jpg" id="video" class="" width="100%" height="100%">
+                <source src=https://raw.githubusercontent.com/sameerchapai3/Ads-Player/main/videos/demo720p.mp4 type="video/mp4" title="720" data-ads-hd>
+                </source>
+                <source src=https://raw.githubusercontent.com/sameerchapai3/Ads-Player/main/videos/demo360p.mp4 type="video/mp4" title="360p">
+                </source>
+            </video></div>
+    </div>
+    <link rel="stylesheet" href="https://raw.githack.com/sameerchapai3/Ads-Player/main/css/1.css">
+    <link rel="stylesheet" href="https://raw.githack.com/sameerchapai3/Ads-Player/main/css/2.css">
+    <script src="https://raw.githack.com/sameerchapai3/Ads-Player/main/js/2.js"></script>
+    <script src="https://raw.githack.com/sameerchapai3/Ads-Player/main/js/1.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            var _videoId = 'video';
+            var _$video = jQuery('#' + _videoId);
+
+            // On button click click. Close ad + play video if exists.
+            jQuery("body").on("click", ".ads-player__happy-inside-btn-close", function() {
+                var $happyInsidePlayer = jQuery(".ads-player__happy-inside");
+                $happyInsidePlayer.hide(300);
+                var $video = jQuery('#' + _videoId)[0];
+                if (undefined !== $video) {
+                    $video.play();
+                }
+            });
+
+            if (0 !== _$video.length) {
+                setupAdsPlayer(_videoId, _$video);
+            }
+
+            /**
+             * Setup AdsPlayer
+             *
+             * @param string videoId
+             */
+            
+            function setupAdsPlayer(videoId, $video) {
+                var ctplOptions = {
+                    primaryColor: "#FF3565",
+                    autoPlay: 'on' === "off",
+                    // Add your vast xml link here
+                    preRoll: "https://syndication.realsrv.com/splash.php?idzone=4079692",
+                    midRoll: "https://syndication.realsrv.com/splash.php?idzone=4079568",
+                    postRoll: "https://syndication.realsrv.com/splash.php?idzone=4069550",
+                    midRollTimer: "50"
+                }
+
+                // Add basic adsPlayer options dynamically.
+                var adsPlayerOptions = {
+                    layoutControls: {
+                        fillToContainer: true,
+                        primaryColor: ctplOptions.primaryColor,
+                        posterImage: $video.attr('poster'),
+                        autoPlay: ctplOptions.autoPlay,
+                        playButtonShowing: true,
+                        playPauseAnimation: true,
+                        mute: false,
+                        keyboardControl: true,
+                        allowDownload: false,
+                        allowTheatre: false,
+                        playbackRateEnabled: true,
+                        controlBar: {
+                            autoHide: true,
+                            autoHideTimeout: 3,
+                            animated: true
+                        },
+                        playerInitCallback: (function() {
+                            $video.parents('.ads-player').find('.ads-player__happy-inside--start').show(300);
+                        })
+                    }
+                };
+
+                // Add vast List options dynamically.
+                var vastListArray = [];
+                if (ctplOptions.preRoll) {
+                    vastListArray.push({
+                        "roll": "preRoll",
+                        "vastTag": ctplOptions.preRoll
+                    });
+                }
+                if (ctplOptions.midRoll && ctplOptions.midRollTimer) {
+                    vastListArray.push({
+                        "roll": "midRoll",
+                        "vastTag": ctplOptions.midRoll,
+                        "timer": ctplOptions.midRollTimer + '%'
+                    });
+                }
+                if (ctplOptions.postRoll) {
+                    vastListArray.push({
+                        "roll": "postRoll",
+                        "vastTag": ctplOptions.postRoll
+                    });
+                }
+                if (vastListArray) {
+                    adsPlayerOptions.vastOptions = {
+                        adList: vastListArray
+                    };
+                }
+                // AdsPlayer Init.
+                var videoPlayer = adsPlayer(videoId, adsPlayerOptions);
+
+                // AdsPlayer On pause event.
+                videoPlayer.on("pause", function() {
+                    $video.addClass('paused');
+                    $video.parents('.ads-player').addClass('paused').find(".ads-player__happy-inside--pause").show(300);
+                });
+
+                // AdsPlayer On play event.
+                videoPlayer.on("play", function() {
+                    $video.removeClass('paused');
+                    $video.parents('.ads-player').removeClass('paused').find(".ads-player__happy-inside--start").hide(300);
+                });
+            }
+        });
+
+    </script>
+</body>
+
+</html>
